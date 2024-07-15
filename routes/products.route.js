@@ -1,5 +1,5 @@
 
-const  {getProducts}  = require('../controllers/products.controllers')
+const  {getProducts, addProduct}  = require('../controllers/products.controllers')
 
 const exp = require('express')
 
@@ -28,6 +28,8 @@ const products = [
 ]
 
 router.get('/',getProducts)
+
+router.post('/',addProduct)
 
 router.get('/:productId',(req,res)=> {
     const productId = req.params.productId

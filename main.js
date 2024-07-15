@@ -23,7 +23,7 @@ const url = 'mongodb+srv://youssef-dev:cloud.mongodb.pass@learn-mongodb.xjqerea.
 const mongoose = require('mongoose')
 
 mongoose.connect(url).then(res=> {
-    console.log(res,'mongoose done');
+    console.log('mongoose done');
 })
 
 // connectDb().then(res=>{
