@@ -2,9 +2,7 @@ const exp = require('express')
 
 const {MongoClient} = require('mongodb')
 
-const url = 'mongodb+srv://youssef-dev:cloud.mongodb.pass@learn-mongodb.xjqerea.mongodb.net/products-db?retryWrites=true&w=majority&appName=learn-mongodb'
 const client = new MongoClient(url)
-
 
 const connectDb = async () => {
     await client.connect()
