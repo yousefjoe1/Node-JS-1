@@ -1,6 +1,8 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 
+require('dotenv').config()
+
 var app = express()
 
 // parse application/x-www-form-urlencoded
@@ -9,14 +11,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-const url = 'mongodb+srv://youssef-dev:cloud.mongodb.pass@learn-mongodb.xjqerea.mongodb.net/products-db?retryWrites=true&w=majority&appName=learn-mongodb'
+const url = process.env.USER_ID;
 
 const mongoose = require('mongoose')
 
 mongoose.connect(url).then(res=> {
     console.log('mongoose done');
 })
-
 
 const productsRouter = require('./routes/products.route')
 
