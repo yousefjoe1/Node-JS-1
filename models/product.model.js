@@ -11,7 +11,11 @@ const productSchema = new mongoose.Schema({
       required: true,
       min: 0.01, // Enforce minimum price (optional)
     },
-    in_card: {
+    in_cart: {
+      type: Boolean,
+      default: false, // Default to false if not explicitly set
+    },
+    in_favorit: {
       type: Boolean,
       default: false, // Default to false if not explicitly set
     },

@@ -1,43 +1,18 @@
 
-const  {getProducts, addProduct}  = require('../controllers/products.controllers')
+const  {getProducts, addProduct, getProduct, updateProduct, deleteProduct}  = require('../controllers/products.controllers')
 
 const exp = require('express')
 
 const router = exp.Router()
 
-
-const products = [
-    {
-        id:1,
-        name:'apple phone',
-        price: 300,
-        in_cart: false
-    },
-    {
-        id:2,
-        name:'apple phone 2',
-        price: 300,
-        in_cart: false
-    },
-    {
-        id:3,
-        name:'apple phone 3',
-        price: 300,
-        in_cart: false
-    },
-]
-
 router.get('/',getProducts)
 
 router.post('/',addProduct)
 
-router.get('/:productId',(req,res)=> {
-    const productId = req.params.productId
-    const product = products.find(pr=> pr.id == productId)
-    if(!product){
-        res.send({msg: 'No product found'})
-    }
-    res.send(product)
-})
+router.get('/:productId',getProduct)
+
+router.patch('/:productId',updateProduct)
+
+router.delete('/:productId',deleteProduct)
 
 module.exports = router
