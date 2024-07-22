@@ -15,6 +15,7 @@ const addProduct  = async (req,res)=> {
     const newProduct = new Products({
         name: req.body.name,
         price: req.body.price,
+        details: req.body.details,
         in_cart: false,
         in_favorit: false,
         image: req.body.image
@@ -27,7 +28,6 @@ const addProduct  = async (req,res)=> {
         res.status(500).send('Error saving product');
       }
 }
-
 
 const getProducts  = async (req,res)=> {
     const products = await Products.find()

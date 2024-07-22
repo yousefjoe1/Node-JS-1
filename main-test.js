@@ -6,7 +6,6 @@ const client = new MongoClient(url)
 
 const connectDb = async () => {
     await client.connect()
-    console.log('connected to mongo db');
 
     const db = client.db('products-db')
     // console.log(db);

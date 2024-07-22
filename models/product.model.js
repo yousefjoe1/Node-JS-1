@@ -6,6 +6,11 @@ const productSchema = new mongoose.Schema({
       required: true,
       trim: true, // Remove leading/trailing whitespace
     },
+    details: {
+      type: String,
+      required: true,
+      trim: true, // Remove leading/trailing whitespace
+    },
     price: {
       type: Number,
       required: true,
