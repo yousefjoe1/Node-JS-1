@@ -2,3 +2,5 @@ env
 .env
 
 ./main-test.js
+/main-test.js
+main-test.js
