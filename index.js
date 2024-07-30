@@ -21,9 +21,13 @@ mongoose.connect(url).then(res=> {
 
 const productsRouter = require('./routes/products.route')
 const userRouter = require('./routes/users.route')
+const adminRouter = require('./routes/admin.route')
+const cartRouter = require('./routes/cart.route')
 
 app.use('/api/products',productsRouter)
 app.use('/api/users',userRouter)
+app.use('/api/admin',adminRouter)
+app.use('/api/cart',cartRouter)
 
 
 app.listen(4000,()=>{

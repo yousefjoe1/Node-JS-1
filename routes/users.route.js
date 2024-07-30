@@ -1,13 +1,11 @@
-const  {getUsers, addUser, loginUser, adminLogin, verifyAdmin}  = require('../controllers/users.controllers')
+const  { addUser, loginUser, verifyUser}  = require('../controllers/users.controllers')
 const exp = require('express')
 
 const router = exp.Router()
 
-router.get('/',getUsers)
 
 router.post('/register',addUser)
 router.post('/login',loginUser)
-router.post('/admin-login',adminLogin)
-router.get('/verify',verifyAdmin)
+router.get('/verify-user',verifyUser)
 
 module.exports = router

@@ -1,5 +1,6 @@
 var express = require('express')
 var bodyParser = require('body-parser')
+var jwt = require("jsonwebtoken");
 
 var app = express()
 
@@ -12,6 +13,20 @@ app.use(bodyParser.json())
 const Products = require('../models/product.model')
 
 const addProduct  = async (req,res)=> {
+  // Todo: add auth header
+  const auth = req.headers['Authorization'] || req.headers['authorization']  
+  const token = auth.split(' ')[1];
+
+  if (!token) {
+    return res.json({data:{ status: "error", data: null, code: 400, msg: "Token required" }})
+  }
+
+  const isAdmin = jwt.verify(token,process.env.S_key)
+  if(isAdmin.email != process.env.ADMIN_KEY){
+    return res.status(500).send('You need to be an admin');
+  }
+  // res.status(200).send({status: "success", data: null, code: 200, msg: "Loged in admin",token: token});
+  console.log('admin',isAdmin);
     const newProduct = new Products({
         name: req.body.name,
         price: req.body.price,

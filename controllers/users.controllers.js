@@ -60,10 +60,6 @@ const addUser = async (req, res) => {
   }
 };
 
-const getUsers = async (req, res) => {
-  const users = await Users.find({}, { __v: false, password: false });
-  res.json({ status: "success", data: users });
-};
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -87,62 +83,41 @@ const loginUser = async (req, res) => {
       });
   }
 
-  if (!user) {
-    return res
-      .status(400)
-      .send({ status: "error", data: null, code: 400, msg: "Wrong details" });
-  }
-
-  const matchedPassword = await bcrypt.compare(password, user.password);
-
-  if (user && matchedPassword) {
-    const token = jwt.sign(
-      { password: password, email: email },
-      process.env.S_key
-    );
-    return res
-      .status(200)
-      .send({
-        status: "success",
-        data: null,
-        code: 200,
-        msg: "Loged in",
-        token: token,
-      });
-  } else {
-    return res
-      .status(400)
-      .send({
-        status: "error",
-        data: null,
-        code: 400,
-        msg: "wrong password or email",
-      });
-  }
-};
-
-const adminLogin = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await Users.findOne({ email: email });
-  if (!user) {
-    return res.json({data:{ status: "error", data: null, code: 400, msg: "Wrong details" }})
-  }
-
-  const matchedPassword = await bcrypt.compare(password, user.password);
-
-  const token = jwt.sign({ password: password, email: email },process.env.S_key);
-  let key = process.env.ADMIN_KEY;
-
-  if (user && matchedPassword) {
-    if (user.email == key) {
+  try {
+    const matchedPassword = await bcrypt.compare(password, user.password);
+    if (user && matchedPassword) {
+      const token = jwt.sign(
+        { password: password, email: email },
+        process.env.S_key
+      );
       return res
         .status(200)
-        .send({status: "success", data: null, code: 200, msg: "Loged in admin",token: token});
+        .send({
+          status: "success",
+          data: null,
+          code: 200,
+          msg: "Loged in",
+          token: token,
+        });
+    } else {
+      return res
+        .status(400)
+        .send({
+          status: "error",
+          data: null,
+          code: 400,
+          msg: "wrong password or email",
+        });
     }
+  } catch (er) {
+    console.log(er,'error in login');
   }
+
+
 };
 
-const verifyAdmin = async (req, res) => {
+
+const verifyUser = async (req, res) => {
   const auth = req.headers['Authorization'] || req.headers['authorization']  
   const token = auth.split(' ')[1];
 
@@ -150,22 +125,21 @@ const verifyAdmin = async (req, res) => {
     return res.json({data:{ status: "error", data: null, code: 400, msg: "Token required" }})
   }
 
-  const isAdmin = jwt.verify(token,process.env.S_key)
+  const userDetails = jwt.verify(token,process.env.S_key)
+  console.log(userDetails,'user info');
       return res.status(200)
-        .send({status: "success", data: null, code: 200, msg: "Loged in admin",token: token});
-
+        .send({status: "success", data: null, code: 200, msg: "User is auth",userDetails:userDetails });
 };
+
 
 const getUser = async (req, res) => {
   const user = await Users.findById(req.params.userId);
-  res.json({ status: "success", data: product });
+  res.json({ status: "success", data: user });
 };
 
 module.exports = {
-  getUsers,
   getUser,
   addUser,
   loginUser,
-  adminLogin,
-  verifyAdmin
+  verifyUser
 };
