@@ -49,7 +49,7 @@ const addUser = async (req, res) => {
         token: token,
       });
     } catch (error) {
-      console.error(error);
+      console.log(error);
       res.json({
         status: "error",
         data: null,
@@ -112,7 +112,7 @@ const verifyUser = async (req, res) => {
   const token = auth.split(" ")[1];
 
   if (token == undefined) {
-    res.json({
+    return res.json({
       data: { status: "error", data: null, code: 400, msg: "Token required" },
     });
   }

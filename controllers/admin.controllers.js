@@ -46,7 +46,7 @@ const verifyAdmin = async (req, res) => {
   const auth = req.headers['Authorization'] || req.headers['authorization']  
   const token = auth.split(' ')[1];
 
-  if (!token) {
+  if (token == undefined) {
     return res.json({data:{ status: "error", data: null, code: 400, msg: "Token required" }})
   }
 

@@ -15,36 +15,37 @@ const Users = require("../models/user.model");
 
 const addProductToCart = async (req, res) => {
   const auth = req.headers["Authorization"] || req.headers["authorization"];
-
-  if (!auth) {
-    return res.json({
-      data: { status: "error", data: null, code: 400, msg: "Login First" },
-    });
-  }
   const token = auth.split(" ")[1];
 
-  const isUser = jwt.verify(token,process.env.S_key);
-
-  const email = await Users.findOne({email:isUser.email})
-
-  if (!token) {
-    return res.json({
-      data: { status: "error", data: null, code: 400, msg: "Login First" },
-    });
-  }
-
-  // res.status(200).send({status: "success", data: null, code: 200, msg: "Loged in admin",token: token});
-  const cart = await Cart.find() 
-  const filterdCart = cart.filter(p=> p.product._id == req.body.product._id)
-  if(filterdCart.length != 0) {
-    return res.status(201).send({product:true}); // Created (201) status code
-  }
-  const newProduct = new Cart({
-    user_id: email._id,
-    product: req.body.product,
-    count: req.body.count,
-  });
   try {
+    if (!auth) {
+      return res.json({
+        data: { status: "error", data: null, code: 400, msg: "Login First" },
+      });
+    }
+  
+    if(token == undefined){
+      return res.json({
+        data: { status: "error", data: null, code: 400, msg: "Login First" },
+      });
+    }
+  
+    const isUser = jwt.verify(token,process.env.S_key);
+  
+    const userId = await Users.findOne({email:isUser.email})
+    const product_id =  req.body.product._id;
+
+    const userCart = await Cart.find({user_id: userId._id})
+    const filterdCart = userCart.filter(p=> p.product._id == product_id)
+
+    if(filterdCart.length != 0 ) {
+      return res.status(201).send({product:true});
+    }
+    const newProduct = new Cart({
+      user_id: userId._id,
+      product: req.body.product,
+      count: req.body.count,
+    });
     await newProduct.save();
     res.status(201).send(newProduct); // Created (201) status code
   } catch (error) {
@@ -58,6 +59,17 @@ const getCart = async (req, res) => {
   const token = auth.split(" ")[1];
 
 try {
+  if (!auth) {
+    return res.json({
+      data: { status: "error", data: null, code: 400, msg: "Login First" },
+    });
+  }
+
+  if(token == undefined){
+    return res.json({
+      data: { status: "error", data: null, code: 400, msg: "Login First" },
+    });
+  }
   
   const isUser = jwt.verify(token,process.env.S_key);
   
@@ -65,7 +77,9 @@ try {
 
   if(email.email == isUser.email){
     const cart = await Cart.find({user_id:email._id});
-    res.json({ status: "success", data: cart });
+    const cartTotal = cart.reduce((accumulator, item) => accumulator + +item.product.price, 0);
+
+    res.json({ status: "success", data: cart, total: cartTotal });
   }else {
     res.json({ status: "error", data: [] });
   }
