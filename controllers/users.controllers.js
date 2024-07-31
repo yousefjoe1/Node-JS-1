@@ -60,7 +60,6 @@ const addUser = async (req, res) => {
   }
 };
 
-
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -73,14 +72,12 @@ const loginUser = async (req, res) => {
   }
 
   if (!email && !password) {
-    res
-      .status(400)
-      .send({
-        status: "error",
-        data: null,
-        code: 400,
-        msg: "Fill the form first",
-      });
+    res.status(400).send({
+      status: "error",
+      data: null,
+      code: 400,
+      msg: "Fill the form first",
+    });
   }
 
   try {
@@ -90,56 +87,75 @@ const loginUser = async (req, res) => {
         { password: password, email: email },
         process.env.S_key
       );
-      return res
-        .status(200)
-        .send({
-          status: "success",
-          data: null,
-          code: 200,
-          msg: "Loged in",
-          token: token,
-        });
+      return res.status(200).send({
+        status: "success",
+        data: null,
+        code: 200,
+        msg: "Loged in",
+        token: token,
+      });
     } else {
-      return res
-        .status(400)
-        .send({
-          status: "error",
-          data: null,
-          code: 400,
-          msg: "wrong password or email",
-        });
+      return res.status(400).send({
+        status: "error",
+        data: null,
+        code: 400,
+        msg: "wrong password or email",
+      });
     }
   } catch (er) {
-    console.log(er,'error in login');
+    console.log(er, "error in login");
   }
-
-
 };
-
 
 const verifyUser = async (req, res) => {
-  const auth = req.headers['Authorization'] || req.headers['authorization']  
-  const token = auth.split(' ')[1];
+  const auth = req.headers["Authorization"] || req.headers["authorization"];
+  const token = auth.split(" ")[1];
 
-  if (!token) {
-    return res.json({data:{ status: "error", data: null, code: 400, msg: "Token required" }})
+  if (token == undefined) {
+    res.json({
+      data: { status: "error", data: null, code: 400, msg: "Token required" },
+    });
   }
 
-  const userDetails = jwt.verify(token,process.env.S_key)
-  console.log(userDetails,'user info');
-      return res.status(200)
-        .send({status: "success", data: null, code: 200, msg: "User is auth",userDetails:userDetails });
-};
 
+  try {
+    const userDetails = jwt.verify(token, process.env.S_key);
+    return res
+      .status(200)
+      .send({
+        status: "success",
+        data: null,
+        code: 200,
+        msg: "User is auth",
+        userDetails: userDetails,
+      });
+  } catch (er) {
+    return res
+      .status(400)
+      .send({
+        status: "error",
+        data: null,
+        code: 400,
+        msg: "User is not auth",
+        userDetails: null,
+      });
+  }
+};
 
 const getUser = async (req, res) => {
   const user = await Users.findById(req.params.userId);
   res.json({ status: "success", data: user });
 };
 
+const getUsers = async (req, res) => {
+  const user = await Users.find();
+  res.json({ status: "success", data: user });
+};
+
 module.exports = {
   getUser,
+  getUsers,
   addUser,
   loginUser,
-  verifyUser
+  verifyUser,
 };

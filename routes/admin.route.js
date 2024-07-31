@@ -6,6 +6,6 @@ const router = exp.Router()
 
 
 router.post('/login',adminLogin)
-router.get('/verify-admin',verifyAdmin)
+router.get('/verify',verifyAdmin)
 
 module.exports = router
