@@ -1,23 +1,39 @@
-var express = require("express");
-var bodyParser = require("body-parser");
-var bcrypt = require("bcryptjs");
-var jwt = require("jsonwebtoken");
-var app = express();
+const express = require("express");
+const bodyParser = require("body-parser");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const app = express();
+const multer = require('multer')
 
-// parse application/x-www-form-urlencoded
+
+
 app.use(bodyParser.urlencoded({ extended: false }));
-
-// parse application/json
 app.use(bodyParser.json());
 
 const Users = require("../models/user.model");
 
-const addUser = async (req, res) => {
+// const upload = multer({ storage: storage })
+
+const addUser = async ( req, res) => {
+console.log(req);
+  let avatarName = ''
+
+  if(req.file != undefined){
+      const {filename,mimetype} = req.file;
+      if(filename != undefined){
+        avatarName = filename
+        const fileType = mimetype.split('/')[1]
+        const types = ['jpg','jpeg','png']
+        if(!types.includes(fileType)){
+          return res.status(400).send({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
+        }
+      }
+
+  }
   const oldUser = await Users.findOne({ email: req.body.email });
 
   if (oldUser) {
-    res
-      .status(400)
+    return res.status(400)
       .send({
         status: "error",
         data: null,
@@ -27,6 +43,7 @@ const addUser = async (req, res) => {
   } else {
     const { username, email, password } = req.body;
 
+
     // password hashing
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -34,6 +51,7 @@ const addUser = async (req, res) => {
       username: username,
       email: email,
       password: hashedPassword,
+      avatar: avatarName
     });
     const token = jwt.sign(
       { password: password, email: email },
@@ -41,7 +59,7 @@ const addUser = async (req, res) => {
     );
     try {
       await newUser.save();
-      res.json({
+      return res.json({
         status: "success",
         data: newUser,
         code: 201,
@@ -50,7 +68,7 @@ const addUser = async (req, res) => {
       });
     } catch (error) {
       console.log(error);
-      res.json({
+     return res.json({
         status: "error",
         data: null,
         code: 400,

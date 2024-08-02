@@ -1,5 +1,6 @@
 var express = require('express')
 var bodyParser = require('body-parser')
+const path = require('path')
 
 require('dotenv').config()
 
@@ -10,6 +11,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
+
+app.use('/uploads',express.static(path.join(__dirname,'uploads')))
 
 const url = process.env.USER_ID;
 
