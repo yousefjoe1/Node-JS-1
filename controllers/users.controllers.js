@@ -15,7 +15,6 @@ const Users = require("../models/user.model");
 // const upload = multer({ storage: storage })
 
 const addUser = async ( req, res) => {
-console.log(req);
   let avatarName = ''
 
   if(req.file != undefined){
@@ -43,7 +42,6 @@ console.log(req);
   } else {
     const { username, email, password } = req.body;
 
-
     // password hashing
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -59,11 +57,11 @@ console.log(req);
     );
     try {
       await newUser.save();
-      return res.json({
+      return res.status(200).send({
         status: "success",
         data: newUser,
-        code: 201,
-        msg: "User Created",
+        code: 200,
+        msg: "Loged in",
         token: token,
       });
     } catch (error) {
@@ -107,7 +105,7 @@ const loginUser = async (req, res) => {
       );
       return res.status(200).send({
         status: "success",
-        data: null,
+        data: user,
         code: 200,
         msg: "Loged in",
         token: token,

@@ -13,7 +13,21 @@ app.use(bodyParser.json())
 const Products = require('../models/product.model')
 
 const addProduct  = async (req,res)=> {
-  // Todo: add auth header
+  let productImg= ''
+
+  if(req.file != undefined){
+      const {filename,mimetype} = req.file;
+      if(filename != undefined){
+        productImg= filename
+        const fileType = mimetype.split('/')[1]
+        const types = ['jpg','jpeg','png']
+        if(!types.includes(fileType)){
+          return res.status(400).send({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
+        }
+      }
+
+  }
+  
   const auth = req.headers['Authorization'] || req.headers['authorization']  
   const token = auth.split(' ')[1];
 
@@ -26,14 +40,13 @@ const addProduct  = async (req,res)=> {
     return res.status(500).send('You need to be an admin');
   }
   // res.status(200).send({status: "success", data: null, code: 200, msg: "Loged in admin",token: token});
-  console.log('admin',isAdmin);
     const newProduct = new Products({
         name: req.body.name,
         price: req.body.price,
         details: req.body.details,
         in_cart: false,
         in_favorit: false,
-        image: req.body.image
+        image: productImg
     })
     try {
         await newProduct.save();

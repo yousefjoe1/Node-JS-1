@@ -3,11 +3,26 @@ const  {getProducts, addProduct, getProduct, updateProduct, deleteProduct}  = re
 
 const exp = require('express')
 
+
+const multer  = require('multer')
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+        const ext = file.mimetype.split('/')[1]
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+      cb(null, file.fieldname + '-' + uniqueSuffix + '.' + ext)
+    }
+  })
+  
+  const upload = multer({ storage: storage })
+
 const router = exp.Router()
 
 router.get('/',getProducts)
 
-router.post('/',addProduct)
+router.post('/',upload.single('image'),addProduct)
 
 router.get('/:productId',getProduct)
 
