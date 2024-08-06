@@ -13,8 +13,8 @@ app.use(bodyParser.json())
 const Products = require('../models/product.model')
 
 const addProduct  = async (req,res)=> {
-  let productImg= ''
 
+  let productImg= ''
   if(req.file != undefined){
       const {filename,mimetype} = req.file;
       if(filename != undefined){
