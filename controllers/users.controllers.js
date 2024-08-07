@@ -3,8 +3,9 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const app = express();
-const multer = require('multer')
 
+const emailExist = "Email exist .. choose another one.";
+const wrongImg = "The image has the wrong type ... choose image like: png or jpg or jpeg.";
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,21 +25,16 @@ const addUser = async ( req, res) => {
         const fileType = mimetype.split('/')[1]
         const types = ['jpg','jpeg','png']
         if(!types.includes(fileType)){
-          return res.status(400).send({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
+          return res.status(400).send({ status: "error", data: null,code: 400, msg: wrongImg});
         }
       }
 
   }
   const oldUser = await Users.findOne({ email: req.body.email });
 
+  // Todo : Update response to front end
   if (oldUser) {
-    return res.status(400)
-      .send({
-        status: "error",
-        data: null,
-        code: 400,
-        msg: "Email exist .. choose another one.",
-      });
+    return res.json({data:{status: "error",data: null,code: 400,msg: emailExist}});
   } else {
     const { username, email, password } = req.body;
 
@@ -57,13 +53,7 @@ const addUser = async ( req, res) => {
     );
     try {
       await newUser.save();
-      return res.status(200).send({
-        status: "success",
-        data: newUser,
-        code: 200,
-        msg: "Loged in",
-        token: token,
-      });
+      return res.json({data:{status: "success",data: newUser,code: 200,msg: "Registerd 👍",token: token}});
     } catch (error) {
       console.log(error);
      return res.json({
@@ -82,18 +72,16 @@ const loginUser = async (req, res) => {
   const user = await Users.findOne({ email: email });
 
   if (!user) {
-    return res
-      .status(400)
-      .send({ status: "error", data: null, code: 400, msg: "Wrong details" });
+    return res.json({data:{ status: "error", data: null, code: 400, msg: "Wrong details" }});
   }
 
   if (!email && !password) {
-    res.status(400).send({
+    res.json({data:{
       status: "error",
       data: null,
       code: 400,
       msg: "Fill the form first",
-    });
+    }});
   }
 
   try {
