@@ -4,10 +4,7 @@ var bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
 var app = express();
 
-// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
-
-// parse application/json
 app.use(bodyParser.json());
 
 const Users = require("../models/user.model");
@@ -23,10 +20,9 @@ const adminLogin = async (req, res) => {
   const { email, password } = req.body;
   
   const user = await Users.findOne({ email: email });
-  // console.log(user);
   
   if (!user) {
-    return res.json({data:{ status: "error", data: null, code: 400, msg: "Wrong details" }})
+    return res.json({data:{ status: "error", data: null, code: 400, msg: "Wrong details --- you are not admin" }})
   }
 
   const matchedPassword = await bcrypt.compare(password, user.password);
@@ -36,9 +32,7 @@ const adminLogin = async (req, res) => {
 
   if (user && matchedPassword) {
     if (user.email == key) {
-      return res
-        .status(200)
-        .send({status: "success", data: null, code: 200, msg: "Loged in admin",token: token});
+      return res.json({data:{status: "success", data: null, code: 200, msg: "Loged in admin",token: token}});
     }
   }
 };

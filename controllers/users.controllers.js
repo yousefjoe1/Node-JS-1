@@ -30,9 +30,10 @@ const addUser = async ( req, res) => {
       }
 
   }
+
   const oldUser = await Users.findOne({ email: req.body.email });
 
-  // Todo : Update response to front end
+
   if (oldUser) {
     return res.json({data:{status: "error",data: null,code: 400,msg: emailExist}});
   } else {
@@ -47,15 +48,13 @@ const addUser = async ( req, res) => {
       password: hashedPassword,
       avatar: avatarName
     });
-    const token = jwt.sign(
-      { password: password, email: email },
-      process.env.S_key
-    );
+    const token = jwt.sign({ password: password, email: email },process.env.S_key);
+
     try {
       await newUser.save();
       return res.json({data:{status: "success",data: newUser,code: 200,msg: "Registerd 👍",token: token}});
     } catch (error) {
-      console.log(error);
+      console.log(error,'error register');
      return res.json({
         status: "error",
         data: null,
@@ -91,13 +90,13 @@ const loginUser = async (req, res) => {
         { password: password, email: email },
         process.env.S_key
       );
-      return res.status(200).send({
+      return res.json({data:{
         status: "success",
         data: user,
         code: 200,
         msg: "Loged in",
         token: token,
-      });
+      }});
     } else {
       return res.status(400).send({
         status: "error",

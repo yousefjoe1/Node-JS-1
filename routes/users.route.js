@@ -15,9 +15,13 @@ const storage = multer.diskStorage({
     }
   })
   
-  const upload = multer({ storage: storage })
+const upload = multer({ storage: storage })
+
+
 
 router.post('/register',upload.single('avatar'), addUser)
+
+
 router.post('/login',loginUser)
 router.get('/verify-user',verifyUser)
 router.get('/',getUsers)
