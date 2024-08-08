@@ -21,8 +21,10 @@ const getUsers = async (req, res) => {
 
 const adminLogin = async (req, res) => {
   const { email, password } = req.body;
-
+  
   const user = await Users.findOne({ email: email });
+  // console.log(user);
+  
   if (!user) {
     return res.json({data:{ status: "error", data: null, code: 400, msg: "Wrong details" }})
   }
