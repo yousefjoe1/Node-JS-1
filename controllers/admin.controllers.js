@@ -18,22 +18,37 @@ const getUsers = async (req, res) => {
 
 const adminLogin = async (req, res) => {
   const { email, password } = req.body;
+
+  console.log();
+  
   
   const user = await Users.findOne({ email: email });
   
   if (!user) {
-    return res.json({data:{ status: "error", data: null, code: 400, msg: "Wrong details --- you are not admin" }})
+    return res.json({ status: "error", data: null, code: 400, msg: "Wrong details --- you are not admin" })
   }
 
-  const matchedPassword = await bcrypt.compare(password, user.password);
 
-  const token = jwt.sign({ password: password, email: email },process.env.S_key);
-  let key = process.env.ADMIN_KEY;
-
-  if (user && matchedPassword) {
-    if (user.email == key) {
-      return res.json({data:{status: "success", data: null, code: 200, msg: "Loged in admin",token: token}});
+  try {
+    const matchedPassword = await bcrypt.compare(password, user.password);
+  
+    const token = jwt.sign({ password: password, email: email },process.env.S_key);
+    let key = process.env.ADMIN_KEY;
+    console.log(user,'user');
+    console.log(matchedPassword,'matchedPassword');
+    
+  
+    if (user && matchedPassword) {
+      if (user.email == key) {
+        return res.json({status: "success", data: null, code: 200, msg: "Loged in admin",token: token});
+      }
+    }else {
+      return res.json({status: "success", data: null, code: 404, msg: "wrong"});
     }
+    
+  } catch (er) {
+    console.log('error',er,'error');
+    return res.json({status: "Error", data: null, code: 404, msg: "Error"});
   }
 };
 
