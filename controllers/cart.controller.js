@@ -105,7 +105,7 @@ const updateCart = async (req, res) => {
   }
 };
 
-const deleteCart = async (req, res) => {
+const deleteUserCart = async (req, res) => {
   const auth = req.headers["Authorization"] || req.headers["authorization"];
 
   if (!auth) {
@@ -137,6 +137,8 @@ const deleteCart = async (req, res) => {
     }
     
   } catch (er) {
+    console.log(er,'error deleting cart item ');
+    
     res.json({ status: "error", data: null,msg: 'error deleting cart item' });
   }
 
@@ -146,5 +148,5 @@ module.exports = {
   addProductToCart,
   getCart,
   updateCart,
-  deleteCart,
+  deleteUserCart,
 };

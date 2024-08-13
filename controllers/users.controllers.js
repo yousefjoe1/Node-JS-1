@@ -35,7 +35,7 @@ const addUser = async ( req, res) => {
 
 
   if (oldUser) {
-    return res.json({data:{status: "error",data: null,code: 400,msg: emailExist}});
+    return res.json({status: "error",data: null,code: 400,msg: emailExist});
   } else {
     const { username, email, password } = req.body;
 
@@ -52,7 +52,7 @@ const addUser = async ( req, res) => {
 
     try {
       await newUser.save();
-      return res.json({data:{status: "success",data: newUser,code: 200,msg: "Registerd 👍",token: token}});
+      return res.json({status: "success",data: newUser,code: 201,msg: "Registerd 👍",token: token});
     } catch (error) {
       console.log(error,'error register');
      return res.json({
@@ -71,16 +71,16 @@ const loginUser = async (req, res) => {
   const user = await Users.findOne({ email: email });
 
   if (!user) {
-    return res.json({data:{ status: "error", data: null, code: 400, msg: "Wrong details" }});
+    return res.json({ status: "error", data: null, code: 400, msg: "Wrong details" });
   }
 
   if (!email && !password) {
-    res.json({data:{
+    res.json({
       status: "error",
       data: null,
       code: 400,
       msg: "Fill the form first",
-    }});
+    });
   }
 
   try {
@@ -90,13 +90,13 @@ const loginUser = async (req, res) => {
         { password: password, email: email },
         process.env.S_key
       );
-      return res.json({data:{
+      return res.json({
         status: "success",
         data: user,
-        code: 200,
+        code: 201,
         msg: "Loged in",
         token: token,
-      }});
+      });
     } else {
       return res.status(400).send({
         status: "error",
@@ -115,17 +115,13 @@ const verifyUser = async (req, res) => {
   const token = auth.split(" ")[1];
 
   if (token == undefined) {
-    return res.json({
-      data: { status: "error", data: null, code: 400, msg: "Token required" },
-    });
+    return res.json({ status: "error", data: null, code: 400, msg: "Token required" },);
   }
 
 
   try {
     const userDetails = jwt.verify(token, process.env.S_key);
-    return res
-      .status(200)
-      .send({
+    return res.json({
         status: "success",
         data: null,
         code: 200,
@@ -133,9 +129,7 @@ const verifyUser = async (req, res) => {
         userDetails: userDetails,
       });
   } catch (er) {
-    return res
-      .status(400)
-      .send({
+    return res.json({
         status: "error",
         data: null,
         code: 400,

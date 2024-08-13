@@ -1,13 +1,9 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var jwt = require("jsonwebtoken");
-
 var app = express()
 
-// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
 app.use(bodyParser.json())
 
 const Products = require('../models/product.model')
@@ -37,9 +33,9 @@ const addProduct  = async (req,res)=> {
 
   const isAdmin = jwt.verify(token,process.env.S_key)
   if(isAdmin.email != process.env.ADMIN_KEY){
-    return res.status(500).send('You need to be an admin');
+    return res.json({data: {msg: 'You need to be an admin',code:301}});
   }
-  // res.status(200).send({status: "success", data: null, code: 200, msg: "Loged in admin",token: token});
+
     const newProduct = new Products({
         name: req.body.name,
         price: req.body.price,
@@ -50,12 +46,82 @@ const addProduct  = async (req,res)=> {
     })
     try {
         await newProduct.save();
-        res.status(201).send(newProduct); // Created (201) status code
+        res.json({data: {msg: 'Success - product created',code: 201}}); // Created (201) status code
       } catch (error) {
         console.error(error);
-        res.status(500).send('Error saving product');
+        res.json({data:{msg: 'Error saving product',code: 301}});
       }
 }
+
+
+const deleteProduct  = async (req,res)=> {
+  const auth = req.headers['Authorization'] || req.headers['authorization']  
+  const token = auth.split(' ')[1];
+
+  if (!token) {
+    return res.json({status: "error", data: null, code: 400, msg: "Token required" })
+  }
+
+  const isAdmin = jwt.verify(token,process.env.S_key)
+  if(isAdmin.email != process.env.ADMIN_KEY){
+    return res.json({msg: 'You need to be an admin',code:301});
+  }
+  
+  try {
+    await Products.deleteOne({_id: req.params.productId})
+    
+    res.json({status:'success',data: null,code: 201,msg: 'Product Deleted .. '})
+  } catch (er) {
+    console.log(er,'delete errors');
+    res.json({status:'error',data: null,code: 403,msg: 'Product Deleted .. '})
+    
+  }
+}
+
+
+const updateProduct  = async (req,res)=> {
+  
+  const productId = req.params.productId
+  let productImg= ''
+  if(req.file != undefined){
+      const {filename,mimetype} = req.file;
+      if(filename != undefined){
+        productImg= filename
+        const fileType = mimetype.split('/')[1]
+        const types = ['jpg','jpeg','png']
+        if(!types.includes(fileType)){
+          return res.status(400).send({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
+        }
+      }
+  }else{
+
+  }
+  
+  const auth = req.headers['Authorization'] || req.headers['authorization']  
+  const token = auth.split(' ')[1];
+
+  if (!token) {
+    return res.json({status: "error", data: null, code: 400, msg: "Token required" })
+  }
+
+  const isAdmin = jwt.verify(token,process.env.S_key)
+  if(isAdmin.email != process.env.ADMIN_KEY){
+    return res.json({msg: 'You need to be an admin',code:301});
+  }
+  
+
+  const newProductObj = {$set:{...req.body,image:productImg}}
+
+  await Products.updateOne({_id:productId},newProductObj)
+
+  try {
+      res.json({status:'success',msg: 'Updated',code: 201});
+    } catch (error) {
+      console.error(error);
+      res.json({status:'error',msg: 'Error Updating the product',code: 403})
+    }
+}
+
 
 const getProducts  = async (req,res)=> {
     const products = await Products.find()
@@ -69,34 +135,8 @@ const getProduct  = async (req,res)=> {
 }
 
 
-const updateProduct  = async (req,res)=> {
-    const productId = req.params.productId
-
-    const newProductObj = {$set:{...req.body}}
-
-    const newProduct = await Products.updateOne({_id:productId},newProductObj)
-
-    try {
-        res.status(201).send(newProduct); // Created (201) status code
-      } catch (error) {
-        console.error(error);
-        res.status(500).send('Error saving product');
-      }
-}
 
 
-const deleteProduct  = async (req,res)=> {
-  
-  try {
-    let resp = await Products.deleteOne({_id: req.params.productId})
-    
-    res.json({status:'success',data: null,code: 201})
-  } catch (er) {
-    console.log(er,'delete errors');
-    res.json({status:'error',data: null,code: 403})
-    
-  }
-}
 
 
 module.exports = {

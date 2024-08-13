@@ -26,7 +26,7 @@ router.post('/',upload.single('image'),addProduct)
 
 router.get('/:productId',getProduct)
 
-router.patch('/:productId',updateProduct)
+router.patch('/:productId',upload.single('image'),updateProduct)
 
 router.delete('/:productId',deleteProduct)
 
