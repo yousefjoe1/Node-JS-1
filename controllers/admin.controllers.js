@@ -42,7 +42,7 @@ const adminLogin = async (req, res) => {
     
   } catch (er) {
     console.log('error',er,'error');
-    return res.json({status: "Error", data: null, code: 404, msg: "Error"});
+    return res.json({status: "Error", data: null, code: 404, msg: "Error",er:er});
   }
 };
 
