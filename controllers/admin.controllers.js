@@ -18,9 +18,6 @@ const getUsers = async (req, res) => {
 
 const adminLogin = async (req, res) => {
   const { email, password } = req.body;
-
-  console.log();
-  
   
   const user = await Users.findOne({ email: email });
   
@@ -34,9 +31,6 @@ const adminLogin = async (req, res) => {
   
     const token = jwt.sign({ password: password, email: email },process.env.S_key);
     let key = process.env.ADMIN_KEY;
-    console.log(user,'user');
-    console.log(matchedPassword,'matchedPassword');
-    
   
     if (user && matchedPassword) {
       if (user.email == key) {
