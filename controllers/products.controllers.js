@@ -18,7 +18,7 @@ const addProduct  = async (req,res)=> {
         const fileType = mimetype.split('/')[1]
         const types = ['jpg','jpeg','png']
         if(!types.includes(fileType)){
-          return res.status(400).send({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
+          return res.json({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
         }
       }
 
@@ -36,20 +36,33 @@ const addProduct  = async (req,res)=> {
     return res.json({data: {msg: 'You need to be an admin',code:301}});
   }
 
-    const newProduct = new Products({
-        name: req.body.name,
-        price: req.body.price,
-        details: req.body.details,
-        in_cart: false,
-        in_favorit: false,
-        image: productImg
-    })
+  let newProduct = ''
+    if(productImg.length == 0){
+       newProduct = new Products({
+          name: req.body.name,
+          price: req.body.price,
+          details: req.body.details,
+          in_cart: false,
+          in_favorit: false,
+      })
+    }else {
+      newProduct = new Products({
+          name: req.body.name,
+          price: req.body.price,
+          details: req.body.details,
+          in_cart: false,
+          in_favorit: false,
+          image: productImg
+      })
+
+    }
+
     try {
         await newProduct.save();
-        res.json({data: {msg: 'Success - product created',code: 201}}); // Created (201) status code
+        res.json({msg: 'Success - product created',code: 201}); // Created (201) status code
       } catch (error) {
-        console.error(error);
-        res.json({data:{msg: 'Error saving product',code: 301}});
+        console.log(error,'error');
+        res.json({msg: `Error saving -- ${error._message}`,code: 301});
       }
 }
 
