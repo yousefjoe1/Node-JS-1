@@ -91,17 +91,17 @@ try {
 };
 
 const updateCart = async (req, res) => {
-  const productId = req.params.productId;
+  const productId = req.params.cartId;
 
   const newProductObj = { $set: { ...req.body } };
 
   const newProduct = await Cart.updateOne({ _id: productId }, newProductObj);
 
   try {
-    res.status(201).send(newProduct); // Created (201) status code
+    res.json({status:'success',code: 201}); // Created (201) status code
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error saving product");
+    res.json({status:'error',code: 301});
   }
 };
 

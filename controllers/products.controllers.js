@@ -122,10 +122,16 @@ const updateProduct  = async (req,res)=> {
     return res.json({msg: 'You need to be an admin',code:301});
   }
   
+  let newp = ''
 
-  const newProductObj = {$set:{...req.body,image:productImg}}
+  if(productImg == ''){
+    newp = {$set:{...req.body}}
 
-  await Products.updateOne({_id:productId},newProductObj)
+  }else {
+    newp = {$set:{...req.body,image:productImg}}
+  }
+
+  await Products.updateOne({_id:productId},newp)
 
   try {
       res.json({status:'success',msg: 'Updated',code: 201});
