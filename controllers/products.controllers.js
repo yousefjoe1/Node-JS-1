@@ -106,8 +106,6 @@ const updateProduct  = async (req,res)=> {
           return res.status(400).send({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
         }
       }
-  }else{
-
   }
   
   const auth = req.headers['Authorization'] || req.headers['authorization']  
