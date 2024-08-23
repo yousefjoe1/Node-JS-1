@@ -35,38 +35,38 @@ const addProduct  = async (req,res)=> {
     return res.json({data:{ status: "error", data: null, code: 400, msg: "Token required" }})
   }
 
-  const isAdmin = jwt.verify(token,process.env.S_key)
-  if(isAdmin.email != process.env.ADMIN_KEY){
-    return res.json({data: {msg: 'You need to be an admin',code:301}});
-  }
-
-  let newProduct = ''
-    if(productImg.length == 0){
-       newProduct = new Products({
-          name: req.body.name,
-          price: req.body.price,
-          details: req.body.details,
-          in_cart: false,
-          in_favorit: false,
-      })
-    }else {
-      newProduct = new Products({
-          name: req.body.name,
-          price: req.body.price,
-          details: req.body.details,
-          in_cart: false,
-          in_favorit: false,
-          image: productImg
-      })
-
-    }
-
-    try {
+  
+  try {
+      const isAdmin = jwt.verify(token,process.env.S_key)
+      if(isAdmin.email != process.env.ADMIN_KEY){
+        return res.json({data: {msg: 'You need to be an admin',code:301}});
+      }
+    
+      let newProduct = ''
+        if(productImg.length == 0){
+           newProduct = new Products({
+              name: req.body.name,
+              price: req.body.price,
+              details: req.body.details,
+              in_cart: false,
+              in_favorit: false,
+          })
+        }else {
+          newProduct = new Products({
+              name: req.body.name,
+              price: req.body.price,
+              details: req.body.details,
+              in_cart: false,
+              in_favorit: false,
+              image: productImg
+          })
+    
+        }
         await newProduct.save();
-        res.json({msg: 'Success - product created',code: 201}); // Created (201) status code
+        return res.json({msg: 'Success - product created',code: 201}); // Created (201) status code
       } catch (error) {
         console.log(error,'error');
-        res.json({msg: `Error saving -- ${error._message}`,code: 301});
+        return res.json({msg: `Error saving -- ${error._message}`,code: 301,msg2:'error in saving'});
       }
 }
 
