@@ -26,6 +26,7 @@ const productSchema = new mongoose.Schema({
     },
     image: {
       type: String, // Store image URL (consider using cloud storage for efficiency)
+      default: '/defaultimg.jpg'
       // Or:
       // type: Buffer, // Store image data as binary (less common)
     },
