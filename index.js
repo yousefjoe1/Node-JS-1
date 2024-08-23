@@ -12,7 +12,7 @@ app.use(cors());
 // parse application/json
 app.use(bodyParser.json())
 
-app.use('/imgs/uploads',express.static(path.join(__dirname,'imgs/uploads')))
+app.use('/api/uploads',express.static(path.join(__dirname,'api/uploads')))
 
 const url = process.env.USER_ID;
 
