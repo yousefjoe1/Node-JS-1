@@ -13,30 +13,30 @@ const addProduct  = async (req,res)=> {
   // console.log(req.body);
   // console.log(req.file);
   
-
-  let productImg= ''
-  if(req.file != undefined){
-      const {filename,mimetype} = req.file;
-      if(filename != undefined){
-        productImg= filename
-        const fileType = mimetype.split('/')[1]
-        const types = ['jpg','jpeg','png']
-        if(!types.includes(fileType)){
-          return res.json({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
-        }
-      }
-
-  }
   
-  const auth = req.headers['Authorization'] || req.headers['authorization']  
-  const token = auth.split(' ')[1];
-
-  if (!token) {
-    return res.json({data:{ status: "error", data: null, code: 400, msg: "Token required" }})
-  }
-
   
   try {
+    
+      let productImg= ''
+      if(req.file != undefined){
+          const {filename,mimetype} = req.file;
+          if(filename != undefined){
+            productImg= filename
+            const fileType = mimetype.split('/')[1]
+            const types = ['jpg','jpeg','png']
+            if(!types.includes(fileType)){
+              return res.json({ status: "error", data: null,code: 400, msg: "The image has the wrong type ... choose image like: png or jpg or jpeg .",});
+            }
+          }
+    
+      }
+      
+      const auth = req.headers['Authorization'] || req.headers['authorization']  
+      const token = auth.split(' ')[1];
+    
+      if (!token) {
+        return res.json({data:{ status: "error", data: null, code: 400, msg: "Token required" }})
+      }
       const isAdmin = jwt.verify(token,process.env.S_key)
       if(isAdmin.email != process.env.ADMIN_KEY){
         return res.json({data: {msg: 'You need to be an admin',code:301}});
@@ -50,7 +50,7 @@ const addProduct  = async (req,res)=> {
               details: req.body.details,
               in_cart: false,
               in_favorit: false,
-              image: ''
+              image: 'defaultimg.jpg'
           })
         }else {
           newProduct = new Products({
