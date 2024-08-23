@@ -10,6 +10,10 @@ const Products = require('../models/product.model')
 
 const addProduct  = async (req,res)=> {
 
+  // console.log(req.body);
+  // console.log(req.file);
+  
+
   let productImg= ''
   if(req.file != undefined){
       const {filename,mimetype} = req.file;
@@ -36,34 +40,27 @@ const addProduct  = async (req,res)=> {
     return res.json({data: {msg: 'You need to be an admin',code:301}});
   }
 
-  // let newProduct = ''
-  //   if(productImg.length == 0){
-  //      newProduct = new Products({
-  //         name: req.body.name,
-  //         price: req.body.price,
-  //         details: req.body.details,
-  //         in_cart: false,
-  //         in_favorit: false,
-  //     })
-  //   }else {
-  //     newProduct = new Products({
-  //         name: req.body.name,
-  //         price: req.body.price,
-  //         details: req.body.details,
-  //         in_cart: false,
-  //         in_favorit: false,
-  //         image: productImg
-  //     })
+  let newProduct = ''
+    if(productImg.length == 0){
+       newProduct = new Products({
+          name: req.body.name,
+          price: req.body.price,
+          details: req.body.details,
+          in_cart: false,
+          in_favorit: false,
+      })
+    }else {
+      newProduct = new Products({
+          name: req.body.name,
+          price: req.body.price,
+          details: req.body.details,
+          in_cart: false,
+          in_favorit: false,
+          image: productImg
+      })
 
-  //   }
-    const newProduct = new Products({
-      name: req.body.name,
-      price: req.body.price,
-      details: req.body.details,
-      in_cart: false,
-      in_favorit: false,
-      image: productImg
-  })
+    }
+
     try {
         await newProduct.save();
         res.json({msg: 'Success - product created',code: 201}); // Created (201) status code
