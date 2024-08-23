@@ -67,7 +67,7 @@ const addProduct  = async (req,res)=> {
         return res.json({msg: 'Success - product created',code: 201}); // Created (201) status code
       } catch (error) {
         console.log(error,'error');
-        return res.json({msg: `Error saving -- ${error._message}`,code: 301,msg2:'error in saving'});
+        return res.json({msg: `Error saving -- ${error}`,code: 301,msg2:'error in saving'});
       }
 }
 
