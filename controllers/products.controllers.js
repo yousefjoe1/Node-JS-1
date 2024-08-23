@@ -50,6 +50,7 @@ const addProduct  = async (req,res)=> {
               details: req.body.details,
               in_cart: false,
               in_favorit: false,
+              image: ''
           })
         }else {
           newProduct = new Products({
