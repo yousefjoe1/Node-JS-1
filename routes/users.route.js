@@ -19,7 +19,7 @@ const upload = multer({ storage: storage })
 
 
 
-router.post('/register',upload.single('avatar'), addUser)
+router.post('/register', addUser)
 
 
 router.post('/login',loginUser)
