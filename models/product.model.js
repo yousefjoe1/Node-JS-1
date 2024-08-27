@@ -26,6 +26,10 @@ const productSchema = new mongoose.Schema({
     },
     image: {
       type: String, // Store image URL (consider using cloud storage for efficiency)
+      // default: 'https://i.postimg.cc/wxtqXwss/image-For-Entry35-1s-Q.jpg'
+    },
+    type: {
+      type: String, // Store image URL (consider using cloud storage for efficiency)
     },
   });
 

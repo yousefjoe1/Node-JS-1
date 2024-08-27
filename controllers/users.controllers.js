@@ -16,20 +16,6 @@ const Users = require("../models/user.model");
 // const upload = multer({ storage: storage })
 
 const addUser = async ( req, res) => {
-  // let avatarName = ''
-
-  // if(req.file != undefined){
-  //     const {filename,mimetype} = req.file;
-  //     if(filename != undefined){
-  //       avatarName = filename
-  //       const fileType = mimetype.split('/')[1]
-  //       const types = ['jpg','jpeg','png']
-  //       if(!types.includes(fileType)){
-  //         return res.status(400).send({ status: "error", data: null,code: 400, msg: wrongImg});
-  //       }
-  //     }
-
-  // }
 
   const oldUser = await Users.findOne({ email: req.body.email });
 
@@ -46,7 +32,6 @@ const addUser = async ( req, res) => {
       username: username,
       email: email,
       password: hashedPassword,
-      // avatar: avatarName
     });
     const token = jwt.sign({ password: password, email: email },process.env.S_key);
 

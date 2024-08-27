@@ -24,7 +24,7 @@ const addProduct = async (req, res) => {
       return res.json({ data: { msg: "You need to be an admin", code: 301 } });
     }
 
-    let defaultimg = "defaultimg.jpg";
+    let defaultimg = "https://i.postimg.cc/wxtqXwss/image-For-Entry35-1s-Q.jpg";
 
     let img = req.body.image == "" ? defaultimg : req.body.image;
     let newProduct = new Products({
@@ -34,6 +34,7 @@ const addProduct = async (req, res) => {
       in_cart: false,
       in_favorit: false,
       image: img,
+      type: req.body.type
     });
 
     await newProduct.save();
@@ -130,11 +131,17 @@ const updateProduct = async (req, res) => {
 };
 
 const getProducts = async (req, res) => {
-  const products = await Products.find();
-  res.json({ status: "success", data: products });
+  const { q, limit } = req.query;
+  if(q || limit){
+    const products = await Products.find({ type: q }).limit(parseInt(limit));
+    res.json({ status: "success", data: products });
+  }else{
+    const products = await Products.find();
+    res.json({ status: "success", data: products });
+  }
 };
 
-const getProduct = async (req, res) => {
+const getProduct = async (req, res) => {  
   const product = await Products.findById(req.params.productId);
   res.json({ status: "success", data: product });
 };
