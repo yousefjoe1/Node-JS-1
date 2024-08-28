@@ -23,23 +23,23 @@ const addProductToCart = async (req, res) => {
         data: { status: "error", data: null, code: 400, msg: "Login First" },
       });
     }
-  
-    if(token == undefined){
+
+    if (token == undefined) {
       return res.json({
         data: { status: "error", data: null, code: 400, msg: "Login First" },
       });
     }
-  
-    const isUser = jwt.verify(token,process.env.S_key);
-  
-    const userId = await Users.findOne({email:isUser.email})
-    const product_id =  req.body.product._id;
 
-    const userCart = await Cart.find({user_id: userId._id})
-    const filterdCart = userCart.filter(p=> p.product._id == product_id)
+    const isUser = jwt.verify(token, process.env.S_key);
 
-    if(filterdCart.length != 0 ) {
-      return res.status(201).send({product:true});
+    const userId = await Users.findOne({ email: isUser.email });
+    const product_id = req.body.product._id;
+
+    const userCart = await Cart.find({ user_id: userId._id });
+    const filterdCart = userCart.filter((p) => p.product._id == product_id);
+
+    if (filterdCart.length != 0) {
+      return res.status(201).send({ product: true });
     }
     const newProduct = new Cart({
       user_id: userId._id,
@@ -58,36 +58,38 @@ const getCart = async (req, res) => {
   const auth = req.headers["Authorization"] || req.headers["authorization"];
   const token = auth.split(" ")[1];
 
-try {
-  if (!auth) {
-    return res.json({
-      data: { status: "error", data: null, code: 400, msg: "Login First" },
-    });
-  }
+  try {
+    if (!auth) {
+      return res.json({
+        data: { status: "error", data: null, code: 400, msg: "Login First" },
+      });
+    }
 
-  if(token == undefined){
-    return res.json({
-      data: { status: "error", data: null, code: 400, msg: "Login First" },
-    });
-  }
-  
-  const isUser = jwt.verify(token,process.env.S_key);
-  
-  const email = await Users.findOne({email:isUser.email})
+    if (token == undefined) {
+      return res.json({
+        data: { status: "error", data: null, code: 400, msg: "Login First" },
+      });
+    }
 
-  if(email.email == isUser.email){
-    const cart = await Cart.find({user_id:email._id});
-    const cartTotal = cart.reduce((accumulator, item) => accumulator + +item.product.price, 0);
+    const isUser = jwt.verify(token, process.env.S_key);
 
-    res.json({ status: "success", data: cart, total: cartTotal });
-  }else {
+    const email = await Users.findOne({ email: isUser.email });
+
+    if (email.email == isUser.email) {
+      let t=0
+      const cart = await Cart.find({ user_id: email._id });
+      cart.forEach(el=>{
+        let c = +el.count * el.product.price
+        t += c
+      })
+
+      res.json({ status: "success", data: cart, total: t });
+    } else {
+      res.json({ status: "error", data: [] });
+    }
+  } catch (er) {
     res.json({ status: "error", data: [] });
   }
-} catch (er) {
-  res.json({ status: "error", data: [] });
-  
-}
-
 };
 
 const updateCart = async (req, res) => {
@@ -98,10 +100,10 @@ const updateCart = async (req, res) => {
   const newProduct = await Cart.updateOne({ _id: productId }, newProductObj);
 
   try {
-    res.json({status:'success',code: 201}); // Created (201) status code
+    res.json({ status: "success", code: 201 }); // Created (201) status code
   } catch (error) {
     console.error(error);
-    res.json({status:'error',code: 301});
+    res.json({ status: "error", code: 301 });
   }
 };
 
@@ -114,7 +116,7 @@ const deleteUserCart = async (req, res) => {
     });
   }
   const token = auth.split(" ")[1];
-  
+
   if (!token) {
     return res.json({
       data: { status: "error", data: null, code: 400, msg: "Login First" },
@@ -122,26 +124,20 @@ const deleteUserCart = async (req, res) => {
   }
 
   try {
+    const isUser = jwt.verify(token, process.env.S_key);
+    const email = await Users.findOne({ email: isUser.email });
 
-    const isUser = jwt.verify(token,process.env.S_key);
-    const email = await Users.findOne({email:isUser.email})
-
-
-    if(email.email == isUser.email){
-
+    if (email.email == isUser.email) {
       await Cart.deleteOne({ _id: req.params.cartId });
-      res.json({ status: "success", data: null,msg: 'Product deleted' });
-
-    }else{
-      res.json({ status: "error", data: null,msg: 'You need to login' });
+      res.json({ status: "success", data: null, msg: "Product deleted" });
+    } else {
+      res.json({ status: "error", data: null, msg: "You need to login" });
     }
-    
   } catch (er) {
-    console.log(er,'error deleting cart item ');
-    
-    res.json({ status: "error", data: null,msg: 'error deleting cart item' });
-  }
+    console.log(er, "error deleting cart item ");
 
+    res.json({ status: "error", data: null, msg: "error deleting cart item" });
+  }
 };
 
 module.exports = {
