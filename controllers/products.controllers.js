@@ -134,7 +134,8 @@ const getProducts = async (req, res) => {
   const { q, limit } = req.query;
   if(q || limit){
     const products = await Products.find({ type: q }).limit(parseInt(limit));
-    res.json({ status: "success", data: products });
+    const productsLength = await Products.find({ type: q }) ;
+    res.json({ status: "success", data: products,productLength: productsLength.length });
   }else{
     const products = await Products.find();
     res.json({ status: "success", data: products });

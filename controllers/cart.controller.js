@@ -97,7 +97,7 @@ const updateCart = async (req, res) => {
 
   const newProductObj = { $set: { ...req.body } };
 
-  const newProduct = await Cart.updateOne({ _id: productId }, newProductObj);
+  await Cart.updateOne({ _id: productId }, newProductObj);
 
   try {
     res.json({ status: "success", code: 201 }); // Created (201) status code
